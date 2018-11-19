@@ -1,0 +1,45 @@
+MODEL:
+  TYPE: generalized_rcnn
+  CONV_BODY: FPN.add_fpn_Perceptual_ResNet50_conv5_body
+  NUM_CLASSES: 4
+  FASTER_RCNN: True
+  BACKBONE_NAME: Perceptual_ResNet50
+  ATTENTIONAL_TRANSITION: False
+NUM_GPUS: 1
+SOLVER:
+  WEIGHT_DECAY: 0.0001
+  LR_POLICY: steps_with_decay
+  BASE_LR: 0.001
+  GAMMA: 0.1
+  MAX_ITER: 40000
+  STEPS: [0, 15000, 30000]
+FPN:
+  FPN_ON: True
+  MULTILEVEL_ROIS: True
+  MULTILEVEL_RPN: True
+FAST_RCNN:
+  ROI_BOX_HEAD: fast_rcnn_heads.add_roi_2mlp_head
+  ROI_XFORM_METHOD: RoIAlign
+  ROI_XFORM_RESOLUTION: 7
+  ROI_XFORM_SAMPLING_RATIO: 2
+TRAIN:
+  WEIGHTS: /data/wang/detectron/pre-trained_model/R-50.pkl
+  DATASETS: ('coco_daofeishi_trainval', 'coco_detection_maizhizhu_train', 'coco_detection_nianchong_train',)
+#'coco_daofeishi_trainval', 'coco_detection_maizhizhu_train', 'coco_detection_nianchong_train',
+  SCALES: (900,1200,)
+  MAX_SIZE: 1200
+  BATCH_SIZE_PER_IM: 256
+  RPN_PRE_NMS_TOP_N: 2000  # Per FPN level
+  IMS_PER_BATCH: 2
+  SNAPSHOT_ITERS: 10000
+  USE_FLIPPED: True
+TEST:
+  DATASETS: ('coco_daofeishi_test', 'coco_detection_maizhizhu_val', 'coco_detection_nianchong_val',)
+#'coco_daofeishi_test', 'coco_detection_maizhizhu_val', 'coco_detection_nianchong_val',
+  SCALE: 1200
+  MAX_SIZE: 1200
+  NMS: 0.5
+  RPN_PRE_NMS_TOP_N: 1000  # Per FPN level
+  RPN_POST_NMS_TOP_N: 1000
+  VOC_EVALUATOR: True
+OUTPUT_DIR: experiments/output/detection/Perceptual_resnet-50
